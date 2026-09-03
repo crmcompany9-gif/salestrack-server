@@ -51,3 +51,55 @@ router.put('/:id', protect, async (req, res) => {
 });
 
 module.exports = router;
+
+// POST /api/clients/:id/send-to-erp — manager only
+// Sends a client marked as Interested to GrowTrack ERP
+const axios = require('axios');
+
+router.post('/:id/send-to-erp', protect, managerOnly, async (req, res) => {
+  try {
+    const client = await Client.findById(req.params.id).populate('assignedTo', 'name');
+    if (!client) return res.status(404).json({ message: 'Client not found' });
+
+    if (client.sentToERP) {
+      return res.status(400).json({ message: 'Client already sent to ERP' });
+    }
+
+    if (client.status !== 'interested') {
+      return res.status(400).json({ message: 'Only interested clients can be sent to ERP' });
+    }
+
+    // Call GrowTrack ERP backend
+    const erpResponse = await axios.post(
+      `${process.env.ERP_BACKEND_URL}/api/clients/from-salestrack`,
+      {
+        companyName:   client.name,
+        contactPerson: client.name,
+        phone:         client.phone,
+        city:          client.city,
+        scheme:        'DPIIT Recognition', // default — manager can change in ERP
+      },
+      {
+        headers: {
+          'x-salestrack-secret': process.env.SALESTRACK_SECRET,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    // Mark as sent in SalesTrack
+    client.sentToERP = true;
+    await client.save();
+
+    res.json({ message: '✅ Client sent to GrowTrack ERP successfully', erpClient: erpResponse.data.client });
+  } catch (err) {
+    // If ERP says duplicate phone
+    if (err.response?.status === 409) {
+      // Still mark as sent since they exist in ERP
+      await Client.findByIdAndUpdate(req.params.id, { sentToERP: true });
+      return res.json({ message: '⚠️ Client already exists in ERP — marked as sent', alreadyExisted: true });
+    }
+    console.error('ERP send error:', err.message);
+    res.status(500).json({ message: 'Failed to send to ERP', error: err.response?.data?.message || err.message });
+  }
+});

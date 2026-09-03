@@ -13,6 +13,7 @@ const clientSchema = new mongoose.Schema({
   lastContact:  { type: Date },
   nextFollowUp: { type: Date },
   totalCalls:   { type: Number, default: 0 },
+  sentToERP:    { type: Boolean, default: false },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Client', clientSchema);
