@@ -55,6 +55,7 @@ module.exports = router;
 // POST /api/clients/:id/send-to-erp — manager only
 // Sends a client marked as Interested to GrowTrack ERP
 const axios = require('axios');
+const { managerOnly } = require('../middleware/auth');
 
 router.post('/:id/send-to-erp', protect, managerOnly, async (req, res) => {
   try {
