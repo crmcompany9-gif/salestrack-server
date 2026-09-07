@@ -18,6 +18,7 @@ app.use('/api/calls',     require('./routes/callRoutes'));
 app.use('/api/clients',   require('./routes/clientRoutes'));
 app.use('/api/targets',   require('./routes/targetRoutes'));
 app.use('/api/dashboard', require('./routes/dashboardRoutes'));
+app.use('/api/notices',   require('./routes/noticeRoutes'));
 
 // Health check
 app.get('/', (req, res) => res.send('SalesTrack API running'));
