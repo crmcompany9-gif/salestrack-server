@@ -13,7 +13,9 @@ const callLogSchema = new mongoose.Schema({
   notes:         { type: String, trim: true },
   recordingLink: { type: String, trim: true },
   callDate:      { type: Date, default: Date.now },
-  nextFollowUp:  { type: Date },
+    nextFollowUp:   { type: Date },
+  amountQuoted:   { type: Number, default: 0 }, // amount discussed with client
+  amountCollected:{ type: Number, default: 0 }, // amount received from client
 }, { timestamps: true });
 
 module.exports = mongoose.model('CallLog', callLogSchema);
