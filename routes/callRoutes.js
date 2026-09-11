@@ -8,7 +8,7 @@ const router = express.Router();
 // POST /api/calls — log a new call
 // Also auto-creates or updates the Client record
 router.post('/', protect, async (req, res) => {
-  const { clientName, clientPhone, clientCity, callType, outcome, duration, notes, recordingLink, nextFollowUp } = req.body;
+  const { clientName, clientPhone, clientCity, callType, outcome, duration, notes, recordingLink, nextFollowUp, amountQuoted, amountCollected } = req.body;
 
   try {
     // Find or create client by phone number
@@ -32,16 +32,18 @@ router.post('/', protect, async (req, res) => {
       await client.save();
     }
 
-    const call = await CallLog.create({
-      employee:     req.user._id,
-      client:       client._id,
-      callType,
-      outcome,
-      duration:     duration || 0,
-      notes,
-      recordingLink,
-      nextFollowUp: nextFollowUp || null,
-    });
+   const call = await CallLog.create({
+  employee:        req.user._id,
+  client:          client._id,
+  callType,
+  outcome,
+  duration:        duration || 0,
+  notes,
+  recordingLink,
+  nextFollowUp:    nextFollowUp || null,
+  amountQuoted:    amountQuoted    || 0,
+  amountCollected: amountCollected || 0,
+});
 
     const populated = await call.populate([
       { path: 'employee', select: 'name email' },

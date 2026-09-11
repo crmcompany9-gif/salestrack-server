@@ -19,6 +19,7 @@ app.use('/api/clients',   require('./routes/clientRoutes'));
 app.use('/api/targets',   require('./routes/targetRoutes'));
 app.use('/api/dashboard', require('./routes/dashboardRoutes'));
 app.use('/api/notices',   require('./routes/noticeRoutes'));
+app.use('/api/incentives', require('./routes/incentiveRoutes'));
 app.use('/api/exotel',    require('./routes/exotelRoutes'));
 
 // Health check
