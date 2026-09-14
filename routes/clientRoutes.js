@@ -50,6 +50,17 @@ router.put('/:id', protect, async (req, res) => {
   }
 });
 
+// DELETE /api/clients/:id — manager only
+router.delete('/:id', protect, managerOnly, async (req, res) => {
+  try {
+    await Client.findByIdAndDelete(req.params.id);
+    await CallLog.deleteMany({ client: req.params.id });
+    res.json({ message: 'Client and call logs deleted' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 module.exports = router;
 
 // POST /api/clients/:id/send-to-erp — manager only
