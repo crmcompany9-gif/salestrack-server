@@ -1,7 +1,7 @@
 const express = require('express');
 const Client  = require('../models/Client');
 const CallLog = require('../models/CallLog');
-const { protect } = require('../middleware/auth');
+const { protect, managerOnly } = require('../middleware/auth');
 
 const router = express.Router();
 
