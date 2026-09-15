@@ -43,14 +43,17 @@ router.post('/', protect, managerOnly, async (req, res) => {
 // PUT /api/users/:id — update employee (manager only)
 router.put('/:id', protect, managerOnly, async (req, res) => {
   try {
-    const { name, phone, role, isActive } = req.body;
-    const user = await User.findByIdAndUpdate(
-      req.params.id,
-      { name, phone, role, isActive },
-      { new: true }
-    ).select('-password');
+    const user = await User.findById(req.params.id);
     if (!user) return res.status(404).json({ message: 'User not found' });
-    res.json(user);
+
+    if (req.body.name     !== undefined) user.name     = req.body.name;
+    if (req.body.phone    !== undefined) user.phone    = req.body.phone;
+    if (req.body.role     !== undefined) user.role     = req.body.role;
+    if (req.body.isActive !== undefined) user.isActive = req.body.isActive;
+    if (req.body.password)               user.password = req.body.password;
+
+    await user.save();
+    res.json({ message: 'Updated successfully' });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
