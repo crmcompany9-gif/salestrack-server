@@ -6,7 +6,7 @@ const { protect } = require('../middleware/auth');
 const router = express.Router();
 
 const generateToken = (id) =>
-  jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' });
+ jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '7d' })
 
 // POST /api/auth/login
 router.post('/login', async (req, res) => {

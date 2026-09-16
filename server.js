@@ -8,7 +8,13 @@ connectDB();
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: [
+    'https://salestrack-client-oonl.onrender.com',
+    'http://localhost:3000',
+  ],
+  credentials: true,
+}));
 app.use(express.json());
 
 // Routes
@@ -24,6 +30,16 @@ app.use('/api/exotel',    require('./routes/exotelRoutes'));
 
 // Health check
 app.get('/', (req, res) => res.send('SalesTrack API running'));
+
+const rateLimit = require('express-rate-limit');
+
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // max 10 login attempts per 15 minutes
+  message: { message: 'Too many login attempts. Please try again after 15 minutes.' },
+});
+
+app.use('/api/auth/login', loginLimiter);
 
 // Keep-alive ping — prevents Render free tier from sleeping
 const https = require('https');
