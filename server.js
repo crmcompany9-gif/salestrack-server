@@ -7,6 +7,19 @@ dotenv.config();
 connectDB();
 
 const app = express();
+const helmet = require('helmet');
+app.use(helmet({
+  contentSecurityPolicy: false, // we disable this for API — frontend handles it
+  crossOriginEmbedderPolicy: false,
+}));
+app.use(helmet.hsts({ maxAge: 31536000, includeSubDomains: true }));
+app.use(helmet.frameguard({ action: 'SAMEORIGIN' }));
+app.use(helmet.noSniff());
+app.use(helmet.referrerPolicy({ policy: 'strict-origin-when-cross-origin' }));
+app.use((req, res, next) => {
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  next();
+});
 
 app.use(cors({
   origin: [
